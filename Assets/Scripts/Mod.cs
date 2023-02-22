@@ -30,7 +30,7 @@ namespace Assets.Scripts
             if(e.Scene == "Flight")
             {
                 Game.Instance.UserInterface.BuildUserInterfaceFromResource<EPFlightUIScript>(
-                    "EventPlanner/EventPlannerFlightPanel", 
+                    "EventPlanner/Flight/EventPlannerFlightPanel", 
                     (script, controller) => script.OnLayoutRebubuilt(controller));
             }
         }

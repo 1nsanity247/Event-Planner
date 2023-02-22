@@ -18,7 +18,9 @@ MonoBehaviour:
   - Content/XML UI
   AutomaticallyRemoveEntries: 1
   entries:
-  - path: EventPlanner/EventPlannerFlightPanel
+  - path: EventPlanner/Flight/EventPlannerFlightPanel
     resource: {fileID: 4900000, guid: dda12e8bae44b4345a4cbc8c9b442fe8, type: 3}
+  - path: EventPlanner/Sprites/colon3
+    resource: {fileID: 21300000, guid: 0cae26ba455d4064ba3b89f502512313, type: 3}
   - path: EventPlanner/UIResourceDatabase
     resource: {fileID: 11400000}

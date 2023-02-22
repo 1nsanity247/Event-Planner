@@ -7,7 +7,8 @@
 
 	<RectTransform class="safe-area">
 		<!--Icon-->
-		<Panel id="ep-icon-panel" class="flight-panel" width="40" height="40" rectAlignment="MiddleRight" offsetXY="0 0" onClick="OnIconClicked();" tooltip="Open Event Planner Panel" tooltipPosition="Left" active="true">
+		<Panel id="ep-icon-panel" class="flight-panel" width="49.5" height="49.5" rectAlignment="UpperRight" offsetXY="0 -355" onClick="OnIconClicked();" tooltip="Open Event Planner Panel" tooltipPosition="Left" active="true">
+			<Image id="Connection" width="35" height="35" offsetXY="0 0" sprite="EventPlanner/Sprites/colon3"/>
 		</Panel>
 	</RectTransform>
 </XmlLayout>
