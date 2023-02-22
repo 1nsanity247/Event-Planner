@@ -1,0 +1,22 @@
+<XmlLayout xmlns="http://www.w3schools.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="..\..\..\ModTools\UI\XmlLayout.xsd">
+	<Include path="Ui/Xml/Flight/FlightStyles.xml" />
+	<Include path="Ui/Xml/InspectorPanel.xml" />
+
+	<Defaults>
+	</Defaults>
+
+	<RectTransform class="safe-area">
+		<!--Icon-->
+		<Panel id="ep-icon-panel" class="flight-panel" width="49.5" height="49.5" rectAlignment="UpperRight" offsetXY="0 -355" onClick="OnTogglePanelState" tooltip="Open Event Planner Panel" tooltipPosition="Left" active="true">
+			<Image id="ep-icon" width="35" height="35" offsetXY="0 0" sprite="EventPlanner/Sprites/colon3"/>
+		</Panel>
+		<!--Main Panel-->
+		<Panel id="ep-main-panel" class="flight-panel draggable" width="300" height="400" rectAlignment="LowerRight" offsetXY="-100 100" border="border" active="false">
+			<Panel class="inspector-header translucent-panel" height="30" rectAlignment="UpperCenter">
+				<TextMeshPro class="inspector-title" text="Event Planner" margin="5 0 50 0" />
+				<Image class="inspector-panel-pin" width="24" height="24" offsetXY="0 0" sprite="Ui/Sprites/Common/IconCloseFlyout" rectAlignment="MiddleRight" onClick="OnTogglePanelState" hoverClass="inspector-panel-pin-hover"/>
+			</Panel>
+			<Image class="audio-btn-click" id="ep-event-button" width="100" height="100" offsetXY="0 0" sprite="Ui/Sprites/Common/IconAdd" rectAlignment="MiddleCenter" onClick="CreateEvent"/>
+		</Panel>
+	</RectTransform>
+</XmlLayout>

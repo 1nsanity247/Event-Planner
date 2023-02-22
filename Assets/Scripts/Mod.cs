@@ -10,7 +10,6 @@ namespace Assets.Scripts
     using ModApi.Scenes.Events;
     using ModApi.Ui;
     using ModApi.Ui.Inspector;
-    using Ookii.Dialogs;
     using UnityEngine;
 
     public class Mod : ModApi.Mods.GameMod
@@ -21,19 +20,6 @@ namespace Assets.Scripts
         protected override void OnModInitialized()
         {
             base.OnModInitialized();
-
-            Game.Instance.SceneManager.SceneLoaded += OnSceneLoaded;
         }
-
-        private void OnSceneLoaded(object sender, SceneEventArgs e)
-        {
-            if(e.Scene == "Flight")
-            {
-                Game.Instance.UserInterface.BuildUserInterfaceFromResource<EPFlightUIScript>(
-                    "EventPlanner/Flight/EventPlannerFlightPanel", 
-                    (script, controller) => script.OnLayoutRebubuilt(controller));
-            }
-        }
-
     }
 }
