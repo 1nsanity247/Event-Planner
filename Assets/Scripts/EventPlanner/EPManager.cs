@@ -1,3 +1,5 @@
+using Assets.Scripts.Scenes;
+using Assets.Scripts.State;
 using ModApi;
 using ModApi.Flight;
 using ModApi.Flight.Sim;
@@ -11,11 +13,13 @@ using UnityEngine;
 
 namespace Assets.Scripts
 {
+    public enum EPEventState { waiting, warningIssued, reached }
+
     public class EPEvent
     {
         public string title, description;
         public double time, warningBuffer;
-        public bool warningIssued = false, reached = false;
+        public EPEventState state = EPEventState.waiting;
     }
 
     public class EPManager : MonoBehaviour
@@ -74,38 +78,44 @@ namespace Assets.Scripts
 
         public void Update()
         {
-            if (!Game.Instance.SceneManager.InFlightScene || _events.Count == 0) return;
-            
-            IFlightScene fs = Game.Instance.FlightScene;
-            double gameTime = fs.FlightState.Time;
+            if (!Game.Instance.SceneManager.InFlightScene || _UIScript == null) return;
 
-            foreach (var epEvent in _events)
-            {       
-                if(epEvent.time - epEvent.warningBuffer < gameTime + fs.TimeManager.DeltaTime)
-                {
-                    if (!epEvent.warningIssued)
+            _UIScript.UpdateEventList(_events);
+
+            if(_events.Count > 0)
+            {
+                IFlightScene fs = Game.Instance.FlightScene;
+                double gameTime = fs.FlightState.Time;
+
+                foreach (var epEvent in _events)
+                {       
+                    if(epEvent.time - epEvent.warningBuffer < gameTime + fs.TimeManager.DeltaTime)
                     {
-                        fs.TimeManager.RequestPauseChange(true, false);
-                        fs.FlightSceneUI.ShowMessage("Event " + epEvent.title + " due in: " + Units.GetRelativeTimeString(epEvent.time - gameTime));
+                        if (epEvent.state == EPEventState.waiting && epEvent.warningBuffer > 0.0f)
+                        {
+                            fs.TimeManager.RequestPauseChange(true, false);
+                            fs.FlightSceneUI.ShowMessage("Event " + epEvent.title + " due in: " + Units.GetRelativeTimeString(epEvent.time - gameTime));
 
-                        epEvent.warningIssued = true;
-                    }
-                    else if(epEvent.time < gameTime + fs.TimeManager.DeltaTime)
-                    {
-                        fs.TimeManager.RequestPauseChange(true, false);
-                        fs.FlightSceneUI.ShowMessage("Event " + epEvent.title + " has been reached");
+                            epEvent.state = EPEventState.warningIssued;
+                        }
+                        else if(epEvent.time < gameTime + fs.TimeManager.DeltaTime)
+                        {
+                            fs.TimeManager.RequestPauseChange(true, false);
+                            fs.FlightSceneUI.ShowMessage("Event " + epEvent.title + " has been reached");
 
-                        epEvent.reached = true;
+                            epEvent.state = EPEventState.reached;
+                        }
                     }
                 }
-            }
 
-            for (int i = 0; i < _events.Count; i++)
-            {
-                if (_events[i].reached)
+                for (int i = 0; i < _events.Count; i++)
                 {
-                    _events.RemoveAt(i);
-                    i--;
+                    if (_events[i].state == EPEventState.reached)
+                    {
+                        _UIScript.ShowNotifPanel(_events[i]);
+                        _events.RemoveAt(i);
+                        i--;
+                    }
                 }
             }
         }
