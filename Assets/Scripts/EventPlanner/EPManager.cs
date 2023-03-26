@@ -77,7 +77,7 @@ namespace Assets.Scripts
         }
 
         public void Update()
-        {
+        {   
             if (!Game.Instance.SceneManager.InFlightScene || _UIScript == null) return;
 
             _UIScript.UpdateEventList(_events);

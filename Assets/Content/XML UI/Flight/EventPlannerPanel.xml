@@ -10,61 +10,21 @@
 		<Panel id="ep-icon-panel" class="flight-panel" width="49.5" height="49.5" rectAlignment="UpperRight" offsetXY="0 -355" onClick="OnTogglePanelState" tooltip="Open Event Planner Panel" tooltipPosition="Left" active="true">
 			<Image id="ep-icon" width="35" height="35" offsetXY="0 0" sprite="EventPlanner/Sprites/colon3"/>
 		</Panel>
+		
 		<!--Main Panel-->
-		<Panel id="ep-main-panel" class="flight-panel draggable" width="250" height="310" rectAlignment="LowerRight" offsetXY="-100 100" border="border" active="false">
-			<!--Header-->
+		<Panel id="ep-main-panel" class="flight-panel draggable" width="350" height="400" rectAlignment="LowerRight" offsetXY="-100 100" border="border" active="false">
 			<Panel class="inspector-header translucent-panel" height="30" rectAlignment="UpperCenter">
 				<TextMeshPro class="inspector-title" text="Event Planner" margin="5 0 50 0" />
 				<Image class="inspector-panel-pin" width="24" height="24" offsetXY="0 0" sprite="Ui/Sprites/Common/IconCloseFlyout" rectAlignment="MiddleRight" onClick="OnTogglePanelState" hoverClass="inspector-panel-pin-hover"/>
 			</Panel>
-			<Image id="add-event-button" class="audio-btn-click" width="30" height="30" rectAlignment="UpperCenter" offsetXY="0 -30" sprite="Ui/Sprites/Common/IconAdd" onClick="AddEventButtonClicked" hoverClass="inspector-panel-pin-hover"/>
-			<!--Event List-->
-			<VerticalLayout id="event-list" class="no-image" padding="4" spacing="4" width="100%" height="35" offsetXY="0 -30" rectAlignment="UpperCenter">
-				<Panel id="event-panel0" color="#2e353e7F" onClick="EventElementClicked(0);" active="false">
-					<TextMeshPro internalId="title" class="label text-sm" alignment="Left" offsetXY="4 0" fontSize="15" text="My Event"/>
-					<TextMeshPro internalId="time" class="label text-sm" alignment="Right" offsetXY="-4 0" fontSize="15" text="T-10min"/>
-				</Panel>
-				<Panel id="event-panel1" color="#2e353e7F" onClick="EventElementClicked(1);" active="false">
-					<TextMeshPro internalId="title" class="label text-sm" alignment="Left" offsetXY="4 0" fontSize="15" text="My Event"/>
-					<TextMeshPro internalId="time" class="label text-sm" alignment="Right" offsetXY="-4 0" fontSize="15" text="T-10min"/>
-				</Panel>
-				<Panel id="event-panel2" color="#2e353e7F" onClick="EventElementClicked(2);" active="false">
-					<TextMeshPro internalId="title" class="label text-sm" alignment="Left" offsetXY="4 0" fontSize="15" text="My Event"/>
-					<TextMeshPro internalId="time" class="label text-sm" alignment="Right" offsetXY="-4 0" fontSize="15" text="T-10min"/>
-				</Panel>
-				<Panel id="event-panel3" color="#2e353e7F" onClick="EventElementClicked(3);" active="false">
-					<TextMeshPro internalId="title" class="label text-sm" alignment="Left" offsetXY="4 0" fontSize="15" text="My Event"/>
-					<TextMeshPro internalId="time" class="label text-sm" alignment="Right" offsetXY="-4 0" fontSize="15" text="T-10min"/>
-				</Panel>
-				<Panel id="event-panel4" color="#2e353e7F" onClick="EventElementClicked(4);" active="false">
-					<TextMeshPro internalId="title" class="label text-sm" alignment="Left" offsetXY="4 0" fontSize="15" text="My Event"/>
-					<TextMeshPro internalId="time" class="label text-sm" alignment="Right" offsetXY="-4 0" fontSize="15" text="T-10min"/>
-				</Panel>
-				<Panel id="event-panel5" color="#2e353e7F" onClick="EventElementClicked(5);" active="false">
-					<TextMeshPro internalId="title" class="label text-sm" alignment="Left" offsetXY="4 0" fontSize="15" text="My Event"/>
-					<TextMeshPro internalId="time" class="label text-sm" alignment="Right" offsetXY="-4 0" fontSize="15" text="T-10min"/>
-				</Panel>
-				<Panel id="event-panel6" color="#2e353e7F" onClick="EventElementClicked(6);" active="false">
-					<TextMeshPro internalId="title" class="label text-sm" alignment="Left" offsetXY="4 0" fontSize="15" text="My Event"/>
-					<TextMeshPro internalId="time" class="label text-sm" alignment="Right" offsetXY="-4 0" fontSize="15" text="T-10min"/>
-				</Panel>
-				<Panel id="event-panel7" color="#2e353e7F" onClick="EventElementClicked(7);" active="false">
-					<TextMeshPro internalId="title" class="label text-sm" alignment="Left" offsetXY="4 0" fontSize="15" text="My Event"/>
-					<TextMeshPro internalId="time" class="label text-sm" alignment="Right" offsetXY="-4 0" fontSize="15" text="T-10min"/>
-				</Panel>
-			</VerticalLayout>
-		</Panel>
-		<!--Notification Panel-->
-		<Panel id="ep-notif-panel" class="flight-panel draggable" width="300" height="200" rectAlignment="UpperRight" offsetXY="-500 -20" border="border" active="false">
-			<Panel class="inspector-header translucent-panel" height="30" rectAlignment="UpperCenter">
-				<TextMeshPro internalId="ep-notif-title" class="inspector-title" text="Event" margin="5 0 50 0" />
-				<Image class="inspector-panel-pin" width="24" height="24" offsetXY="0 0" sprite="Ui/Sprites/Common/IconCloseFlyout" rectAlignment="MiddleRight" onClick="OnCloseNotifPanel" hoverClass="inspector-panel-pin-hover"/>
+			<Panel width="100%" height="370" rectAlignment="LowerCenter">
+				<VerticalScrollView class="no-image">
+					<VerticalLayout id="event-list" class="no-image" padding="4" spacing="4" childForceExpandHeight="false"></VerticalLayout>
+				</VerticalScrollView>
 			</Panel>
-			<TextMeshPro internalId="description" class="label text-sm" alignment="TopLeft" margin="8 8 8 50" offsetXY="0 -30" fontSize="15" text="Description"/>
-			<ContentButton class="audio-btn-click" width="50" height="30" color="#00a1f2" rectAlignment="LowerCenter" offsetXY="0 8" onClick="OnCloseNotifPanel" hoverClass="inspector-panel-pin-hover">
-				<TextMeshPro class="label text-sm" alignment="Center" fontSize="15" color="#ffffff" text="Close"/>
-			</ContentButton>
+			<Image id="add-event-button" class="audio-btn-click" width="30" height="30" offsetXY="0 4" rectAlignment="LowerCenter" sprite="Ui/Sprites/Common/IconAdd" onClick="AddEventButtonClicked" hoverClass="inspector-panel-pin-hover"/>
 		</Panel>
+		
 		<!--Create Event Panel-->
 		<Panel id="ep-create-event-panel" class="flight-panel draggable" width="475" height="300" rectAlignment="LowerRight" offsetXY="-150 150" border="border" active="false">
 			<Panel class="inspector-header translucent-panel" height="30" rectAlignment="UpperCenter">
@@ -80,28 +40,28 @@
 				<TMP_Text internalId="desc-text" richText="false" color="#ffffff" text="" />
 			</TextMeshProInputField>
 			<TextMeshPro class="label text-sm" alignment="TopLeft" offsetXY="276 -38" fontSize="15" text="Time"/>
-			<TextMeshProInputField internalId="time0-input" width="75" height="30" rectAlignment="UpperRight" offsetXY="-124 -60" text="" onValueChanged="OnNewEventDaysChanged(value)">
+			<TextMeshProInputField internalId="time0-input" width="75" height="30" rectAlignment="UpperRight" offsetXY="-124 -60" text="" contentType="IntegerNumber" onValueChanged="OnNewEventDaysChanged(value)">
 				<TMP_Placeholder text="d" alignment="Right" />
 				<TMP_Text internalId="time0-text" richText="false" color="#ffffff" text="" />
 			</TextMeshProInputField>
-			<TextMeshProInputField internalId="time1-input" width="50" height="30" rectAlignment="UpperRight" offsetXY="-66 -60" text="" onValueChanged="OnNewEventHoursChanged(value)">
+			<TextMeshProInputField internalId="time1-input" width="50" height="30" rectAlignment="UpperRight" offsetXY="-66 -60" text="" contentType="IntegerNumber" onValueChanged="OnNewEventHoursChanged(value)">
 				<TMP_Placeholder text="h" alignment="Right" />
 				<TMP_Text internalId="time1-text" richText="false" color="#ffffff" text="" />
 			</TextMeshProInputField>
-			<TextMeshProInputField internalId="time2-input" width="50" height="30" rectAlignment="UpperRight" offsetXY="-8 -60" text="" onValueChanged="OnNewEventMinutesChanged(value)">
+			<TextMeshProInputField internalId="time2-input" width="50" height="30" rectAlignment="UpperRight" offsetXY="-8 -60" text="" contentType="IntegerNumber" onValueChanged="OnNewEventMinutesChanged(value)">
 				<TMP_Placeholder text="min" alignment="Right" />
 				<TMP_Text internalId="time2-text" richText="false" color="#ffffff" text="" />
 			</TextMeshProInputField>
 			<TextMeshPro class="label text-sm" alignment="TopLeft" offsetXY="276 -98" fontSize="15" text="Warning"/>
-			<TextMeshProInputField internalId="time3-input" width="75" height="30" rectAlignment="UpperRight" offsetXY="-124 -120" text="" onValueChanged="OnNewEventBufferDaysChanged(value)">
+			<TextMeshProInputField internalId="time3-input" width="75" height="30" rectAlignment="UpperRight" offsetXY="-124 -120" text="" contentType="IntegerNumber" onValueChanged="OnNewEventBufferDaysChanged(value)">
 				<TMP_Placeholder text="d" alignment="Right" />
 				<TMP_Text internalId="time3-text" richText="false" color="#ffffff" text="" />
 			</TextMeshProInputField>
-			<TextMeshProInputField internalId="time4-input" width="50" height="30" rectAlignment="UpperRight" offsetXY="-66 -120" text="" onValueChanged="OnNewEventBufferHoursChanged(value)">
+			<TextMeshProInputField internalId="time4-input" width="50" height="30" rectAlignment="UpperRight" offsetXY="-66 -120" text="" contentType="IntegerNumber" onValueChanged="OnNewEventBufferHoursChanged(value)">
 				<TMP_Placeholder text="h" alignment="Right" />
 				<TMP_Text internalId="time4-text" richText="false" color="#ffffff" text="" />
 			</TextMeshProInputField>
-			<TextMeshProInputField internalId="time5-input" width="50" height="30" rectAlignment="UpperRight" offsetXY="-8 -120" text="" onValueChanged="OnNewEventBufferMinutesChanged(value)">
+			<TextMeshProInputField internalId="time5-input" width="50" height="30" rectAlignment="UpperRight" offsetXY="-8 -120" text="" contentType="IntegerNumber" onValueChanged="OnNewEventBufferMinutesChanged(value)">
 				<TMP_Placeholder text="min" alignment="Right" />
 				<TMP_Text internalId="time5-text" richText="false" color="#ffffff" text="" />
 			</TextMeshProInputField>
@@ -109,5 +69,23 @@
 				<TextMeshPro class="label text-sm" alignment="Center" fontSize="15" color="#ffffff" text="Add Event"/>
 			</ContentButton>
 		</Panel>
+
+		<!--Notification Panel-->
+		<Panel id="ep-notif-panel" class="flight-panel draggable" width="300" height="200" rectAlignment="UpperRight" offsetXY="-500 -20" border="border" active="false">
+			<Panel class="inspector-header translucent-panel" height="30" rectAlignment="UpperCenter">
+				<TextMeshPro internalId="ep-notif-title" class="inspector-title" text="Event" margin="5 0 50 0" />
+				<Image class="inspector-panel-pin" width="24" height="24" offsetXY="0 0" sprite="Ui/Sprites/Common/IconCloseFlyout" rectAlignment="MiddleRight" onClick="OnCloseNotifPanel" hoverClass="inspector-panel-pin-hover"/>
+			</Panel>
+			<TextMeshPro internalId="description" class="label text-sm" alignment="TopLeft" margin="8 8 8 50" offsetXY="0 -30" fontSize="15" text="Description"/>
+			<ContentButton class="audio-btn-click" width="50" height="30" color="#00a1f2" rectAlignment="LowerCenter" offsetXY="0 8" onClick="OnCloseNotifPanel" hoverClass="inspector-panel-pin-hover">
+				<TextMeshPro class="label text-sm" alignment="Center" fontSize="15" color="#ffffff" text="Close"/>
+			</ContentButton>
+		</Panel>
 	</RectTransform>
+
+	<!--Templates-->
+	<Panel id="text-list-item" color="#2e353e7F" preferredHeight="35" active="false">
+		<TextMeshPro internalId="label" class="label column-left" offsetXY="4 0" fontSize="15" text="label"/>
+		<TextMeshPro internalId="value" class="label column-right" offsetXY="-4 0" fontSize="15" text="value"/>
+	</Panel>
 </XmlLayout>

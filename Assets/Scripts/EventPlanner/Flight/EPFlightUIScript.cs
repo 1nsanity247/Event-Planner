@@ -10,31 +10,33 @@ namespace Assets.Scripts
 {
     public class EPFlightUIScript : MonoBehaviour
     {
-        private XmlLayoutController _controller;
-        private XmlElement _mainPanel;
+        private XmlLayoutController controller;
+        private XmlElement mainPanel;
+        private XmlElement listItemTemplate;
 
-        public int MaxEvents { get; private set; } = 8;
         private bool createEventPanelOpen = false;
         private string newEventTitle, newEventDesc;
         private int[] newEventTimes;
         private readonly float[] timeFactors = { 60.0f, 3600.0f, 86400.0f, 60.0f, 3600.0f, 86400.0f };
 
-        public void OnLayoutRebubuilt(IXmlLayoutController controller)
+        public void OnLayoutRebubuilt(IXmlLayoutController layoutController)
         {
-            _controller = (XmlLayoutController)controller;
-            _mainPanel = _controller.xmlLayout.GetElementById("ep-main-panel");
+            controller = (XmlLayoutController)layoutController;
+            mainPanel = controller.xmlLayout.GetElementById("ep-main-panel");
+
+            listItemTemplate = controller.xmlLayout.GetElementById("text-list-item");
         }
 
         public void OnTogglePanelState()
         {
-            _mainPanel.SetActive(!_mainPanel.isActiveAndEnabled);
+            mainPanel.SetActive(!mainPanel.isActiveAndEnabled);
         }
 
         public void AddEventButtonClicked()
         {
             if (!createEventPanelOpen)
             {
-                XmlElement panel = _controller.xmlLayout.GetElementById("ep-create-event-panel");
+                XmlElement panel = controller.xmlLayout.GetElementById("ep-create-event-panel");
                 panel.SetActive(true);
 
                 newEventTitle = string.Empty;
@@ -63,13 +65,13 @@ namespace Assets.Scripts
 
         public void OnCloseCreateEventPanel()
         {
-            _controller.xmlLayout.GetElementById("ep-create-event-panel").SetActive(false);
+            controller.xmlLayout.GetElementById("ep-create-event-panel").SetActive(false);
             createEventPanelOpen = false;
         }
 
         public void OnCreateEvent()
         {
-            XmlElement panel = _controller.xmlLayout.GetElementById("ep-create-event-panel");
+            XmlElement panel = controller.xmlLayout.GetElementById("ep-create-event-panel");
 
             if (newEventTitle == null || newEventTitle.Length == 0) 
             {
@@ -109,28 +111,63 @@ namespace Assets.Scripts
 
         public void OnCloseNotifPanel()
         {
-            _controller.xmlLayout.GetElementById("ep-notif-panel").SetActive(false);
+            controller.xmlLayout.GetElementById("ep-notif-panel").SetActive(false);
         }
 
         public void ShowNotifPanel(EPEvent reachedEvent)
         {
-            XmlElement notifPanel = _controller.xmlLayout.GetElementById("ep-notif-panel");
+            XmlElement notifPanel = controller.xmlLayout.GetElementById("ep-notif-panel");
             notifPanel.SetActive(true);
             notifPanel.GetElementByInternalId("ep-notif-title").SetAndApplyAttribute("text", reachedEvent.title);
             notifPanel.GetElementByInternalId("description").SetAndApplyAttribute("text", reachedEvent.description);
         }
 
+        private void AddEventListItem(XmlElement list, int id)
+        {
+            XmlElement listItem = Instantiate(listItemTemplate);
+            XmlElement component = listItem.GetComponent<XmlElement>();
+
+            component.Initialise(list.xmlLayoutInstance, (RectTransform)listItem.transform, listItemTemplate.tagHandler);
+            list.AddChildElement(component);
+            component.SetAttribute("active", "true");
+            component.SetAttribute("id", "event-list-item" + id.ToString());
+            component.ApplyAttributes();
+        }
+
+        private void RebuildEventListUi(XmlElement list, int count)
+        {
+            List<XmlElement> elements = new List<XmlElement>(list.childElements);
+
+            foreach (var element in elements)
+                list.RemoveChildElement(element, true);
+
+            for (int i = 0; i < count; i++)
+                AddEventListItem(list, i);
+        }
+
         public void UpdateEventList(List<EPEvent> events)
         {
-            _controller.xmlLayout.GetElementById("event-list").SetAndApplyAttribute("height", (35 * Mathf.Min(MaxEvents, events.Count)).ToString());
-            _controller.xmlLayout.GetElementById("add-event-button").SetAndApplyAttribute("offsetXY", "0 " + (-35.0 * (events.Count + 1)));
-            _controller.xmlLayout.GetElementById("add-event-button").SetActive(events.Count < MaxEvents);
+            XmlElement list = controller.xmlLayout.GetElementById("event-list");
+
+            if(list.childElements.Count != events.Count)
+                RebuildEventListUi(list, events.Count);
+
+            List<XmlElement> elements = new List<XmlElement>(list.childElements);
 
             double time = Game.Instance.FlightScene.FlightState.Time;
 
-            for (int i = 0; i < MaxEvents; i++)
+            for (int i = 0; i < events.Count; i++)
             {
-                XmlElement e = _controller.xmlLayout.GetElementById("event-panel" + i);
+                string warningText = events[i].warningBuffer > 0.0f ? ((events[i].state == EPEventState.waiting ? Format(events[i].time - time - events[i].warningBuffer) : "-") + " | ") : "";
+                string timeText = warningText + Format(events[i].time - time);
+
+                elements[i].GetElementByInternalId("label").SetAndApplyAttribute("text", events[i].title);
+                elements[i].GetElementByInternalId("value").SetAndApplyAttribute("text", timeText);
+            }
+            /*
+            for (int i = 0; i < events.Count; i++)
+            {
+                XmlElement e = controller.xmlLayout.GetElementById("event-panel" + i);
                 
                 if(i < events.Count)
                 {
@@ -144,6 +181,7 @@ namespace Assets.Scripts
                 else
                     e.SetActive(false);
             }
+            */
         }
 
         private string Format(double time) { return Units.GetRelativeTimeString(time); }
