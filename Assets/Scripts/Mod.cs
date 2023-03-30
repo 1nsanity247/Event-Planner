@@ -16,10 +16,5 @@ namespace Assets.Scripts
     {
         private Mod() : base() {}
         public static Mod Instance { get; } = GetModInstance<Mod>();
-
-        protected override void OnModInitialized()
-        {
-            base.OnModInitialized();
-        }
     }
 }

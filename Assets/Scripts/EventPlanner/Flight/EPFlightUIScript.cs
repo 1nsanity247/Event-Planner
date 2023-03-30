@@ -1,10 +1,8 @@
-using ModApi.Ui;
 using UI.Xml;
-using ModApi;
+using ModApi.Ui;
 using UnityEngine;
-using System.Collections.Generic;
 using ModApi.Math;
-using System.Linq;
+using System.Collections.Generic;
 
 namespace Assets.Scripts
 {
@@ -15,9 +13,7 @@ namespace Assets.Scripts
         private XmlElement listItemTemplate;
 
         private bool createEventPanelOpen = false;
-        private string newEventTitle, newEventDesc;
-        private int[] newEventTimes;
-        private readonly float[] timeFactors = { 60.0f, 3600.0f, 86400.0f, 60.0f, 3600.0f, 86400.0f };
+        private readonly float[] timeFactors = { 86400.0f, 3600.0f, 60.0f, 86400.0f, 3600.0f, 60.0f };
 
         public void OnLayoutRebubuilt(IXmlLayoutController layoutController)
         {
@@ -27,41 +23,21 @@ namespace Assets.Scripts
             listItemTemplate = controller.xmlLayout.GetElementById("text-list-item");
         }
 
-        public void OnTogglePanelState()
-        {
-            mainPanel.SetActive(!mainPanel.isActiveAndEnabled);
-        }
+        public void OnTogglePanelState() { mainPanel.SetActive(!mainPanel.isActiveAndEnabled); }
 
         public void AddEventButtonClicked()
         {
-            if (!createEventPanelOpen)
-            {
-                XmlElement panel = controller.xmlLayout.GetElementById("ep-create-event-panel");
-                panel.SetActive(true);
+            if (createEventPanelOpen) return;
 
-                newEventTitle = string.Empty;
-                newEventDesc = string.Empty;
-                newEventTimes = new int[6];
-                createEventPanelOpen = true;
+            XmlElement panel = controller.xmlLayout.GetElementById("ep-create-event-panel");
+            panel.SetActive(true);
+            createEventPanelOpen = true;
 
-                panel.GetElementByInternalId("title-input").SetAndApplyAttribute("text", "");
-                panel.GetElementByInternalId("desc-input").SetAndApplyAttribute("text", "");
-                for (int i = 0; i < 6; i++)
-                    panel.GetElementByInternalId("time" + i + "-input").SetAndApplyAttribute("text", "");
-            }
+            panel.GetElementByInternalId("title-input").SetAndApplyAttribute("text", "");
+            panel.GetElementByInternalId("desc-input").SetAndApplyAttribute("text", "");
+            for (int i = 0; i < 6; i++)
+                panel.GetElementByInternalId("time-input" + i).SetAndApplyAttribute("text", "");
         }
-
-        public void OnNewEventTitleChanged(string value) { newEventTitle = value; }
-        public void OnNewEventDescChanged(string value) { newEventDesc = value; }
-
-        public void OnNewEventDaysChanged(string value) { SetTimeValue(value, 2); }
-        public void OnNewEventHoursChanged(string value) { SetTimeValue(value, 1); }
-        public void OnNewEventMinutesChanged(string value) { SetTimeValue(value, 0); }
-        public void OnNewEventBufferDaysChanged(string value) { SetTimeValue(value, 5); }
-        public void OnNewEventBufferHoursChanged(string value) { SetTimeValue(value, 4); }
-        public void OnNewEventBufferMinutesChanged(string value) { SetTimeValue(value, 3); }
-
-        private void SetTimeValue(string value, int index) { newEventTimes[index] = int.TryParse(value, out int res) ? res : 0; }
 
         public void OnCloseCreateEventPanel()
         {
@@ -72,33 +48,33 @@ namespace Assets.Scripts
         public void OnCreateEvent()
         {
             XmlElement panel = controller.xmlLayout.GetElementById("ep-create-event-panel");
-
-            if (newEventTitle == null || newEventTitle.Length == 0) 
-            {
-                Game.Instance.FlightScene.FlightSceneUI.ShowMessage("Failed to create Event, invalid title!");
-                return;
-            }
-
-            if (newEventDesc == null || newEventDesc.Length == 0)
-                newEventDesc = "-";
-
-            float time = 0.0f, warningBuffer = 0.0f;
             
-            for (int i = 0; i < newEventTimes.Length; i++)
-            {
-                if (i < 3)
-                    time += timeFactors[i] * newEventTimes[i];
-                else
-                    warningBuffer += timeFactors[i] * newEventTimes[i];
-            }
+            var inputs = panel.GetFormData();
 
-            if (time <= 0.0f || warningBuffer < 0.0f)
+            string title = inputs["title-input"];
+            string desc = inputs["desc-input"];
+
+            if (title == null || title.Length == 0) 
             {
-                Game.Instance.FlightScene.FlightSceneUI.ShowMessage("Failed to create Event, invalid time inputs!");
+                ShowMessage("Failed to create Event, invalid title!");
                 return;
             }
 
-            EPManager.Instance.CreateEvent(newEventTitle, newEventDesc, Game.Instance.FlightScene.FlightState.Time + time, warningBuffer);
+            if (desc == null || desc.Length == 0)
+                desc = "-";
+
+            float[] times = { 0.0f, 0.0f };
+            
+            for (int i = 0; i < 6; i++)
+                times[i/3] += timeFactors[i] * (float.TryParse(inputs["time-input" + i], out float res) ? res : 0);
+
+            if (times[0] <= 0.0f || times[1] < 0.0f)
+            {
+                ShowMessage("Failed to create Event, invalid time inputs!");
+                return;
+            }
+
+            EPManager.Instance.CreateEvent(title, desc, Game.Instance.FlightScene.FlightState.Time + times[0], times[1]);
 
             panel.SetActive(false);
             createEventPanelOpen = false;
@@ -109,11 +85,6 @@ namespace Assets.Scripts
             print(id);
         }
 
-        public void OnCloseNotifPanel()
-        {
-            controller.xmlLayout.GetElementById("ep-notif-panel").SetActive(false);
-        }
-
         public void ShowNotifPanel(EPEvent reachedEvent)
         {
             XmlElement notifPanel = controller.xmlLayout.GetElementById("ep-notif-panel");
@@ -121,6 +92,8 @@ namespace Assets.Scripts
             notifPanel.GetElementByInternalId("ep-notif-title").SetAndApplyAttribute("text", reachedEvent.title);
             notifPanel.GetElementByInternalId("description").SetAndApplyAttribute("text", reachedEvent.description);
         }
+        
+        public void OnCloseNotifPanel() { controller.xmlLayout.GetElementById("ep-notif-panel").SetActive(false); }
 
         private void AddEventListItem(XmlElement list, int id)
         {
@@ -158,32 +131,16 @@ namespace Assets.Scripts
 
             for (int i = 0; i < events.Count; i++)
             {
-                string warningText = events[i].warningBuffer > 0.0f ? ((events[i].state == EPEventState.waiting ? Format(events[i].time - time - events[i].warningBuffer) : "-") + " | ") : "";
-                string timeText = warningText + Format(events[i].time - time);
+                string warningText = events[i].warningBuffer > 0.0f ? ((events[i].state == EPEventState.Waiting ? FormatTime(events[i].time - time - events[i].warningBuffer) : "-") + " | ") : "";
+                string timeText = warningText + FormatTime(events[i].time - time);
 
                 elements[i].GetElementByInternalId("label").SetAndApplyAttribute("text", events[i].title);
                 elements[i].GetElementByInternalId("value").SetAndApplyAttribute("text", timeText);
             }
-            /*
-            for (int i = 0; i < events.Count; i++)
-            {
-                XmlElement e = controller.xmlLayout.GetElementById("event-panel" + i);
-                
-                if(i < events.Count)
-                {
-                    string warningText = events[i].warningBuffer > 0.0f ? ((events[i].state == EPEventState.waiting ? Format(events[i].time - time - events[i].warningBuffer) : "-") + " | ") : "";
-                    string timeText = warningText + Format(events[i].time - time);
-
-                    e.SetActive(true);
-                    e.GetElementByInternalId("title").SetAndApplyAttribute("text", events[i].title);
-                    e.GetElementByInternalId("time").SetAndApplyAttribute("text", timeText);
-                }
-                else
-                    e.SetActive(false);
-            }
-            */
         }
 
-        private string Format(double time) { return Units.GetRelativeTimeString(time); }
+        private string FormatTime(double time) { return Units.GetRelativeTimeString(time); }
+
+        private void ShowMessage(string message) { Game.Instance.FlightScene?.FlightSceneUI.ShowMessage(message); }
     }
 }

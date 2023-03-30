@@ -31,39 +31,39 @@
 				<TextMeshPro class="inspector-title" text="Create New Event" margin="5 0 50 0" />
 				<Image class="inspector-panel-pin" width="24" height="24" offsetXY="0 0" sprite="Ui/Sprites/Common/IconCloseFlyout" rectAlignment="MiddleRight" onClick="OnCloseCreateEventPanel" hoverClass="inspector-panel-pin-hover"/>
 			</Panel>
-			<TextMeshProInputField internalId="title-input" width="250" height="30" rectAlignment="UpperLeft" offsetXY="8 -38" text="" onValueChanged="OnNewEventTitleChanged(value)">
+			<TextMeshProInputField internalId="title-input" width="250" height="30" rectAlignment="UpperLeft" offsetXY="8 -38" text="">
 				<TMP_Placeholder text="Title" alignment="Left" />
 				<TMP_Text internalId="title-text" richText="false" color="#ffffff" text="" />
 			</TextMeshProInputField>
-			<TextMeshProInputField internalId="desc-input" width="250" height="150" rectAlignment="UpperLeft" offsetXY="8 -76" lineType="MultiLineSubmit" text="" onValueChanged="OnNewEventDescChanged(value)">
+			<TextMeshProInputField internalId="desc-input" width="250" height="150" rectAlignment="UpperLeft" offsetXY="8 -76" lineType="MultiLineSubmit" text="">
 				<TMP_Placeholder text="Description" alignment="TopLeft" />
 				<TMP_Text internalId="desc-text" richText="false" color="#ffffff" text="" />
 			</TextMeshProInputField>
 			<TextMeshPro class="label text-sm" alignment="TopLeft" offsetXY="276 -38" fontSize="15" text="Time"/>
-			<TextMeshProInputField internalId="time0-input" width="75" height="30" rectAlignment="UpperRight" offsetXY="-124 -60" text="" contentType="IntegerNumber" onValueChanged="OnNewEventDaysChanged(value)">
+			<TextMeshProInputField internalId="time-input0" width="75" height="30" rectAlignment="UpperRight" offsetXY="-124 -60" text="" contentType="IntegerNumber">
 				<TMP_Placeholder text="d" alignment="Right" />
-				<TMP_Text internalId="time0-text" richText="false" color="#ffffff" text="" />
+				<TMP_Text internalId="time-text0" richText="false" color="#ffffff" text="" />
 			</TextMeshProInputField>
-			<TextMeshProInputField internalId="time1-input" width="50" height="30" rectAlignment="UpperRight" offsetXY="-66 -60" text="" contentType="IntegerNumber" onValueChanged="OnNewEventHoursChanged(value)">
+			<TextMeshProInputField internalId="time-input1" width="50" height="30" rectAlignment="UpperRight" offsetXY="-66 -60" text="" contentType="IntegerNumber">
 				<TMP_Placeholder text="h" alignment="Right" />
-				<TMP_Text internalId="time1-text" richText="false" color="#ffffff" text="" />
+				<TMP_Text internalId="time-text1" richText="false" color="#ffffff" text="" />
 			</TextMeshProInputField>
-			<TextMeshProInputField internalId="time2-input" width="50" height="30" rectAlignment="UpperRight" offsetXY="-8 -60" text="" contentType="IntegerNumber" onValueChanged="OnNewEventMinutesChanged(value)">
+			<TextMeshProInputField internalId="time-input2" width="50" height="30" rectAlignment="UpperRight" offsetXY="-8 -60" text="" contentType="IntegerNumber">
 				<TMP_Placeholder text="min" alignment="Right" />
-				<TMP_Text internalId="time2-text" richText="false" color="#ffffff" text="" />
+				<TMP_Text internalId="time-text2" richText="false" color="#ffffff" text="" />
 			</TextMeshProInputField>
 			<TextMeshPro class="label text-sm" alignment="TopLeft" offsetXY="276 -98" fontSize="15" text="Warning"/>
-			<TextMeshProInputField internalId="time3-input" width="75" height="30" rectAlignment="UpperRight" offsetXY="-124 -120" text="" contentType="IntegerNumber" onValueChanged="OnNewEventBufferDaysChanged(value)">
+			<TextMeshProInputField internalId="time-input3" width="75" height="30" rectAlignment="UpperRight" offsetXY="-124 -120" text="" contentType="IntegerNumber">
 				<TMP_Placeholder text="d" alignment="Right" />
-				<TMP_Text internalId="time3-text" richText="false" color="#ffffff" text="" />
+				<TMP_Text internalId="time-text3" richText="false" color="#ffffff" text="" />
 			</TextMeshProInputField>
-			<TextMeshProInputField internalId="time4-input" width="50" height="30" rectAlignment="UpperRight" offsetXY="-66 -120" text="" contentType="IntegerNumber" onValueChanged="OnNewEventBufferHoursChanged(value)">
+			<TextMeshProInputField internalId="time-input4" width="50" height="30" rectAlignment="UpperRight" offsetXY="-66 -120" text="" contentType="IntegerNumber">
 				<TMP_Placeholder text="h" alignment="Right" />
-				<TMP_Text internalId="time4-text" richText="false" color="#ffffff" text="" />
+				<TMP_Text internalId="time-text4" richText="false" color="#ffffff" text="" />
 			</TextMeshProInputField>
-			<TextMeshProInputField internalId="time5-input" width="50" height="30" rectAlignment="UpperRight" offsetXY="-8 -120" text="" contentType="IntegerNumber" onValueChanged="OnNewEventBufferMinutesChanged(value)">
+			<TextMeshProInputField internalId="time-input5" width="50" height="30" rectAlignment="UpperRight" offsetXY="-8 -120" text="" contentType="IntegerNumber">
 				<TMP_Placeholder text="min" alignment="Right" />
-				<TMP_Text internalId="time5-text" richText="false" color="#ffffff" text="" />
+				<TMP_Text internalId="time-text5" richText="false" color="#ffffff" text="" />
 			</TextMeshProInputField>
 			<ContentButton class="audio-btn-click" width="75" height="35" color="#00a1f2" rectAlignment="LowerCenter" offsetXY="0 8" onClick="OnCreateEvent" hoverClass="inspector-panel-pin-hover">
 				<TextMeshPro class="label text-sm" alignment="Center" fontSize="15" color="#ffffff" text="Add Event"/>
