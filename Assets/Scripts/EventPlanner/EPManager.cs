@@ -2,9 +2,11 @@ using System.IO;
 using ModApi.Math;
 using UnityEngine;
 using ModApi.Flight;
+using ModApi.Flight.Events;
 using ModApi.Scenes.Events;
 using System.Xml.Serialization;
 using System.Collections.Generic;
+using Assets.Packages.DevConsole;
 
 namespace Assets.Scripts
 {
@@ -26,6 +28,7 @@ namespace Assets.Scripts
         private List<EPEvent> _events;
         private XmlSerializer _xmlSerializer;
         private EventDatabase _eventDB;
+        private bool _loadTempData = false;
 
         private void Awake()
         {
@@ -39,8 +42,13 @@ namespace Assets.Scripts
 
         private void Start()
         {
+            DevConsoleApi.RegisterCommand("ClearEventXml", () =>
+            {
+                _eventDB = null;
+                SaveEventXml();
+            });
+            
             Game.Instance.SceneManager.SceneLoaded += OnSceneLoaded;
-            Game.Instance.SceneManager.SceneTransitionStarted += OnScenceTransitionStarted;
 
             if (!File.Exists(EPFilePath + "EventData.xml"))
                 SaveEventXml();
@@ -54,17 +62,39 @@ namespace Assets.Scripts
                     "EventPlanner/Flight/EventPlannerPanel",
                     (script, controller) => script.OnLayoutRebubuilt(controller));
 
-                LoadEventXml();
+                if (!_loadTempData)
+                    LoadEventXml();
+                else
+                    _loadTempData = false;
+
                 LoadEventsFromDatabase();
+
+                Game.Instance.FlightScene.FlightEnded += OnFlightEnded;
             }
         }
-        
-        private void OnScenceTransitionStarted(object sender, SceneTransitionEventArgs e)
+
+        private void OnFlightEnded(object sender, FlightEndedEventArgs e)
         {
-            if(e.TransitionFromScene == "Flight")
+            switch (e.ExitReason)
             {
-                SaveEventsToDatabase();
-                SaveEventXml();
+                case FlightSceneExitReason.SaveAndDestroy:
+                    goto case FlightSceneExitReason.SaveAndExit;
+                case FlightSceneExitReason.SaveAndRecover:
+                    goto case FlightSceneExitReason.SaveAndExit;
+                case FlightSceneExitReason.SaveAndExit:
+                    SaveEventsToDatabase();
+                    SaveEventXml();
+                    print("Saving xml");
+                    break;
+                case FlightSceneExitReason.CraftNodeChanged:
+                    goto case FlightSceneExitReason.QuickLoad;
+                case FlightSceneExitReason.QuickLoad:
+                    SaveEventsToDatabase();
+                    print("Saving to database");
+                    _loadTempData = true;
+                    break;
+                default:
+                    break;
             }
         }
 
