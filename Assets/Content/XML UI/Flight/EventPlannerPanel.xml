@@ -6,16 +6,12 @@
 	</Defaults>
 
 	<RectTransform class="safe-area">
-		<!--Icon-->
-		<Panel id="ep-icon-panel" class="flight-panel" width="49.5" height="49.5" rectAlignment="UpperRight" offsetXY="0 -355" onClick="OnTogglePanelState" tooltip="Open Event Planner Panel" tooltipPosition="Left" active="true">
-			<Image id="ep-icon" width="35" height="35" offsetXY="0 0" sprite="EventPlanner/Sprites/colon3"/>
-		</Panel>
-		
 		<!--Main Panel-->
-		<Panel id="ep-main-panel" class="flight-panel draggable" width="350" height="400" rectAlignment="LowerRight" offsetXY="-100 100" border="border" active="false">
+		<Panel id="ep-main-panel" class="flight-panel draggable" width="350" height="400" rectAlignment="LowerRight" offsetXY="-100 100" border="border" active="true">
 			<Panel class="inspector-header translucent-panel" height="30" rectAlignment="UpperCenter">
 				<TextMeshPro class="inspector-title" text="Event Planner" margin="5 0 50 0" />
-				<Image class="inspector-panel-pin" width="24" height="24" offsetXY="0 0" sprite="Ui/Sprites/Common/IconCloseFlyout" rectAlignment="MiddleRight" onClick="OnTogglePanelState" hoverClass="inspector-panel-pin-hover"/>
+				<Image class="audio-btn-click" width="24" height="24" rectAlignment="MiddleRight" offsetXY="-45 0" sprite="Ui/Sprites/Flight/IconTimeWarp" onClick="OnWarpButtonClicked" tooltip="Warp To Next Event"/>
+				<Image class="inspector-panel-pin" width="24" height="24" rectAlignment="MiddleRight" sprite="Ui/Sprites/Common/IconCloseFlyout" onClick="OnTogglePanelState" hoverClass="inspector-panel-pin-hover"/>
 			</Panel>
 			<Panel width="100%" height="370" rectAlignment="LowerCenter">
 				<VerticalScrollView class="no-image">
@@ -26,7 +22,7 @@
 		</Panel>
 		
 		<!--Create Event Panel-->
-		<Panel id="ep-create-event-panel" class="flight-panel draggable" width="475" height="300" rectAlignment="LowerRight" offsetXY="-150 150" border="border" active="false">
+		<Panel id="ep-create-event-panel" class="flight-panel draggable" width="500" height="300" rectAlignment="LowerRight" offsetXY="-150 150" border="border" active="false">
 			<Panel class="inspector-header translucent-panel" height="30" rectAlignment="UpperCenter">
 				<TextMeshPro class="inspector-title" text="Create New Event" margin="5 0 50 0" />
 				<Image class="inspector-panel-pin" width="24" height="24" offsetXY="0 0" sprite="Ui/Sprites/Common/IconCloseFlyout" rectAlignment="MiddleRight" onClick="OnCloseCreateEventPanel" hoverClass="inspector-panel-pin-hover"/>
@@ -40,31 +36,39 @@
 				<TMP_Text internalId="desc-text" richText="false" color="#ffffff" text="" />
 			</TextMeshProInputField>
 			<TextMeshPro class="label text-sm" alignment="TopLeft" offsetXY="276 -38" fontSize="15" text="Time"/>
-			<TextMeshProInputField internalId="time-input0" width="75" height="30" rectAlignment="UpperRight" offsetXY="-124 -60" text="" contentType="IntegerNumber">
-				<TMP_Placeholder text="d" alignment="Right" />
-				<TMP_Text internalId="time-text0" richText="false" color="#ffffff" text="" />
-			</TextMeshProInputField>
-			<TextMeshProInputField internalId="time-input1" width="50" height="30" rectAlignment="UpperRight" offsetXY="-66 -60" text="" contentType="IntegerNumber">
-				<TMP_Placeholder text="h" alignment="Right" />
-				<TMP_Text internalId="time-text1" richText="false" color="#ffffff" text="" />
-			</TextMeshProInputField>
-			<TextMeshProInputField internalId="time-input2" width="50" height="30" rectAlignment="UpperRight" offsetXY="-8 -60" text="" contentType="IntegerNumber">
-				<TMP_Placeholder text="min" alignment="Right" />
-				<TMP_Text internalId="time-text2" richText="false" color="#ffffff" text="" />
-			</TextMeshProInputField>
+			<Panel class="no-image" width="236" height="46" rectAlignment="UpperRight" offsetXY="0 -52">
+				<HorizontalLayout class="no-image" padding="8" spacing="8">
+					<TextMeshProInputField internalId="time-input0" text="" contentType="IntegerNumber">
+						<TMP_Placeholder text="d" alignment="Right" />
+						<TMP_Text internalId="time-text0" richText="false" color="#ffffff" text="" />
+					</TextMeshProInputField>
+					<TextMeshProInputField internalId="time-input1" text="" contentType="IntegerNumber">
+						<TMP_Placeholder text="h" alignment="Right" />
+						<TMP_Text internalId="time-text1" richText="false" color="#ffffff" text="" />
+					</TextMeshProInputField>
+					<TextMeshProInputField internalId="time-input2" text="" contentType="IntegerNumber">
+						<TMP_Placeholder text="min" alignment="Right" />
+						<TMP_Text internalId="time-text2" richText="false" color="#ffffff" text="" />
+					</TextMeshProInputField>
+				</HorizontalLayout>
+			</Panel>
 			<TextMeshPro class="label text-sm" alignment="TopLeft" offsetXY="276 -98" fontSize="15" text="Warning"/>
-			<TextMeshProInputField internalId="time-input3" width="75" height="30" rectAlignment="UpperRight" offsetXY="-124 -120" text="" contentType="IntegerNumber">
-				<TMP_Placeholder text="d" alignment="Right" />
-				<TMP_Text internalId="time-text3" richText="false" color="#ffffff" text="" />
-			</TextMeshProInputField>
-			<TextMeshProInputField internalId="time-input4" width="50" height="30" rectAlignment="UpperRight" offsetXY="-66 -120" text="" contentType="IntegerNumber">
-				<TMP_Placeholder text="h" alignment="Right" />
-				<TMP_Text internalId="time-text4" richText="false" color="#ffffff" text="" />
-			</TextMeshProInputField>
-			<TextMeshProInputField internalId="time-input5" width="50" height="30" rectAlignment="UpperRight" offsetXY="-8 -120" text="" contentType="IntegerNumber">
-				<TMP_Placeholder text="min" alignment="Right" />
-				<TMP_Text internalId="time-text5" richText="false" color="#ffffff" text="" />
-			</TextMeshProInputField>
+			<Panel class="no-image" width="236" height="46" rectAlignment="UpperRight" offsetXY="0 -112">
+				<HorizontalLayout class="no-image" padding="8" spacing="8">
+					<TextMeshProInputField internalId="time-input3" text="" contentType="IntegerNumber">
+						<TMP_Placeholder text="d" alignment="Right" />
+						<TMP_Text internalId="time-text3" richText="false" color="#ffffff" text="" />
+					</TextMeshProInputField>
+					<TextMeshProInputField internalId="time-input4" text="" contentType="IntegerNumber">
+						<TMP_Placeholder text="h" alignment="Right" />
+						<TMP_Text internalId="time-text4" richText="false" color="#ffffff" text="" />
+					</TextMeshProInputField>
+					<TextMeshProInputField internalId="time-input5" text="" contentType="IntegerNumber">
+						<TMP_Placeholder text="min" alignment="Right" />
+						<TMP_Text internalId="time-text5" richText="false" color="#ffffff" text="" />
+					</TextMeshProInputField>
+				</HorizontalLayout>
+			</Panel>
 			<ContentButton class="audio-btn-click" width="75" height="35" color="#00a1f2" rectAlignment="LowerCenter" offsetXY="0 8" onClick="OnCreateEvent" hoverClass="inspector-panel-pin-hover">
 				<TextMeshPro class="label text-sm" alignment="Center" fontSize="15" color="#ffffff" text="Add Event"/>
 			</ContentButton>
@@ -84,7 +88,7 @@
 	</RectTransform>
 
 	<!--Templates-->
-	<Panel id="text-list-item" color="#2e353e7F" preferredHeight="35" active="false">
+	<Panel id="text-list-item" class="audio-btn-click" color="#2e353e7F" preferredHeight="35" active="false" onClick="OnEventListItemClicked(this)">
 		<TextMeshPro internalId="label" class="label column-left" offsetXY="4 0" fontSize="15" text="label"/>
 		<TextMeshPro internalId="value" class="label column-right" offsetXY="-4 0" fontSize="15" text="value"/>
 	</Panel>

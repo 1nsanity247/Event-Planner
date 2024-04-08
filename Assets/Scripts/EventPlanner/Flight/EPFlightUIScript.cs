@@ -3,6 +3,7 @@ using ModApi.Ui;
 using UnityEngine;
 using ModApi.Math;
 using System.Collections.Generic;
+using ModApi.Audio;
 
 namespace Assets.Scripts
 {
@@ -12,10 +13,16 @@ namespace Assets.Scripts
         private XmlElement mainPanel;
         private XmlElement listItemTemplate;
 
-        private bool createEventPanelOpen = false;
+        private bool _mainPanelVisible = false;
+        private bool _createEventPanelVisible = false;
+        private bool _notifPanelVisible = false;
+
+        private int _lastClickedId = -1;
+        private float _lastClickTime = 0.0f;
+
         private readonly float[] timeFactors = { 86400.0f, 3600.0f, 60.0f, 86400.0f, 3600.0f, 60.0f };
 
-        public void OnLayoutRebubuilt(IXmlLayoutController layoutController)
+        public void OnLayoutRebuilt(IXmlLayoutController layoutController)
         {
             controller = (XmlLayoutController)layoutController;
             mainPanel = controller.xmlLayout.GetElementById("ep-main-panel");
@@ -23,26 +30,31 @@ namespace Assets.Scripts
             listItemTemplate = controller.xmlLayout.GetElementById("text-list-item");
         }
 
-        public void OnTogglePanelState() { mainPanel.SetActive(!mainPanel.isActiveAndEnabled); }
+        public void OnTogglePanelState() { _mainPanelVisible = !_mainPanelVisible; }
+
+        public void SetUIVisibility(bool state)
+        {
+            mainPanel.SetActive(state && _mainPanelVisible);
+            controller.xmlLayout.GetElementById("ep-create-event-panel").SetActive(state && _createEventPanelVisible);
+            controller.xmlLayout.GetElementById("ep-notif-panel").SetActive(state && _notifPanelVisible);
+        }
 
         public void AddEventButtonClicked()
         {
-            if (createEventPanelOpen) return;
+            if (_createEventPanelVisible) return;
 
-            XmlElement panel = controller.xmlLayout.GetElementById("ep-create-event-panel");
-            panel.SetActive(true);
-            createEventPanelOpen = true;
+            _createEventPanelVisible = true;
 
-            panel.GetElementByInternalId("title-input").SetAndApplyAttribute("text", "");
-            panel.GetElementByInternalId("desc-input").SetAndApplyAttribute("text", "");
+            XmlElement createEventPanel = controller.xmlLayout.GetElementById("ep-create-event-panel");
+            createEventPanel.GetElementByInternalId("title-input").SetAndApplyAttribute("text", "");
+            createEventPanel.GetElementByInternalId("desc-input").SetAndApplyAttribute("text", "");
             for (int i = 0; i < 6; i++)
-                panel.GetElementByInternalId("time-input" + i).SetAndApplyAttribute("text", "");
+                createEventPanel.GetElementByInternalId("time-input" + i).SetAndApplyAttribute("text", "");
         }
 
         public void OnCloseCreateEventPanel()
         {
-            controller.xmlLayout.GetElementById("ep-create-event-panel").SetActive(false);
-            createEventPanelOpen = false;
+            _createEventPanelVisible = false;
         }
 
         public void OnCreateEvent()
@@ -76,24 +88,46 @@ namespace Assets.Scripts
 
             EPManager.Instance.CreateEvent(title, desc, Game.Instance.FlightScene.FlightState.Time + times[0], times[1]);
 
-            panel.SetActive(false);
-            createEventPanelOpen = false;
+            _createEventPanelVisible = false;
         }
 
-        public void EventElementClicked(int id)
+        private void OnEventListItemClicked(XmlElement element)
         {
-            print(id);
+            if (!int.TryParse(element.GetAttribute("event-list-item-id"), out int eventId))
+                return;
+            
+            if (eventId != _lastClickedId || Time.time - _lastClickTime > 2.0f)
+            {
+                Game.Instance.FlightScene.FlightSceneUI.ShowMessage("Click again to remove the event", false, 3.0f);
+
+                _lastClickedId = eventId;
+                _lastClickTime = Time.time;
+                return;
+            }
+
+            if (Time.time - _lastClickTime < 2.0f)
+            {
+                EPManager.Instance.RemoveEvent(eventId);
+                _lastClickedId = -1;
+            }
         }
 
-        public void ShowNotifPanel(EPEvent reachedEvent)
+        private void OnWarpButtonClicked()
         {
+            EPManager.Instance.WarpToNextEvent();
+        }
+
+        public void ShowNotifPanel(EventData reachedEvent)
+        {
+            Game.Instance.AudioPlayer.PlaySound(AudioLibrary.Career.ContractComplete);
+
+            _notifPanelVisible = true;
             XmlElement notifPanel = controller.xmlLayout.GetElementById("ep-notif-panel");
-            notifPanel.SetActive(true);
             notifPanel.GetElementByInternalId("ep-notif-title").SetAndApplyAttribute("text", reachedEvent.title);
             notifPanel.GetElementByInternalId("description").SetAndApplyAttribute("text", reachedEvent.description);
         }
         
-        public void OnCloseNotifPanel() { controller.xmlLayout.GetElementById("ep-notif-panel").SetActive(false); }
+        public void OnCloseNotifPanel() { _notifPanelVisible = false; }
 
         private void AddEventListItem(XmlElement list, int id)
         {
@@ -103,7 +137,7 @@ namespace Assets.Scripts
             component.Initialise(list.xmlLayoutInstance, (RectTransform)listItem.transform, listItemTemplate.tagHandler);
             list.AddChildElement(component);
             component.SetAttribute("active", "true");
-            component.SetAttribute("id", "event-list-item" + id.ToString());
+            component.SetAttribute("event-list-item-id", id.ToString());
             component.ApplyAttributes();
         }
 
@@ -118,7 +152,7 @@ namespace Assets.Scripts
                 AddEventListItem(list, i);
         }
 
-        public void UpdateEventList(List<EPEvent> events)
+        public void UpdateEventList(List<EventData> events)
         {
             XmlElement list = controller.xmlLayout.GetElementById("event-list");
 

@@ -20,6 +20,8 @@ MonoBehaviour:
   entries:
   - path: EventPlanner/Flight/EventPlannerPanel
     resource: {fileID: 4900000, guid: d53ee45f69ee6d44a82177c7138d7564, type: 3}
+  - path: EventPlanner/Sprites/alert
+    resource: {fileID: 21300000, guid: 4d4019ef7f1bfcc4a9377c53d876632d, type: 3}
   - path: EventPlanner/Sprites/colon3
     resource: {fileID: 21300000, guid: 0cae26ba455d4064ba3b89f502512313, type: 3}
   - path: EventPlanner/UIResourceDatabase

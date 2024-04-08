@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: ModData
   m_EditorClassIdentifier: 
   _assemblies:
+  - Unity.AI.Navigation.dll
   - EventPlanner.dll
   _author: Insanity
   _description: 
@@ -27,7 +28,7 @@ MonoBehaviour:
   _steamTitle: 
   _steamVisibility: 0
   _versionMajor: 0
-  _versionMinor: 14
+  _versionMinor: 16
   _partCategories: []
   _parts: []
   _partStyleExtensions: []

@@ -33,23 +33,24 @@ namespace Assets.Scripts
         /// </value>
         public static ModSettings Instance => _instance ?? (_instance = Game.Instance.Settings.ModSettings.GetCategory<ModSettings>());
 
+        public enum SillinessLevel { Default, Silly, Silliest };
+
         ///// <summary>
-        ///// Gets the TestSetting1 value
+        ///// Gets the Silliness value
         ///// </summary>
         ///// <value>
         ///// The TestSetting1 value.
         ///// </value>
-        //public NumericSetting<float> TestSetting1 { get; private set; }
+        public EnumSetting<SillinessLevel> Silliness { get; private set; }
 
         /// <summary>
         /// Initializes the settings in the category.
         /// </summary>
         protected override void InitializeSettings()
         {
-            //this.TestSetting1 = this.CreateNumeric<float>("Test Setting 1", 1f, 10f, 1f)
-            //    .SetDescription("A test setting that does nothing.")
-            //    .SetDisplayFormatter(x => x.ToString("F1"))
-            //    .SetDefault(2f);
+            Silliness = CreateEnum<SillinessLevel>("Silliness")
+                .SetDescription("The level of silliness.")
+                .SetDefault(SillinessLevel.Default);
         }
     }
 }
