@@ -27,13 +27,14 @@ namespace Assets.Scripts
         private XmlSerializer _xmlSerializer;
         private EventDatabase _eventDB;
         private bool _loadTempData = false;
+        private const double desiredWarpTime = 5.0;
 
         public static XmlElement eventPanelButton;
-        public const string defaultIconPath = "Ui/Sprites/Common/IconButtonSquare";
+        public const string defaultIconPath = "EventPlanner/Sprites/EPIcon";
         public const string sillyIconPath = "EventPlanner/Sprites/alert";
         public const string silliestIconPath = "EventPlanner/Sprites/colon3";
         public const string eventPanelButtonId = "event-panel-nav-button";
-
+        
         public const int EventXmlVersion = 1;
 
         private void Awake()
@@ -87,11 +88,11 @@ namespace Assets.Scripts
                 .Descendants(nameSpace + "ContentButton")
                 .First(x => (string)x.Attribute("id") == "nav-sphere-translation");
             
-            string iconPath = ModSettings.Instance.Silliness.Value switch
+            string iconPath = ModSettings.Instance.Nothingness.Value switch
             {
-                ModSettings.SillinessLevel.Default => defaultIconPath,
-                ModSettings.SillinessLevel.Silly => sillyIconPath,
-                ModSettings.SillinessLevel.Silliest => silliestIconPath,
+                ModSettings.NothingnessLevel.Nothing => defaultIconPath,
+                ModSettings.NothingnessLevel.Nothinger => sillyIconPath,
+                ModSettings.NothingnessLevel.Nothingest => silliestIconPath,
                 _ => defaultIconPath,
             };
             
@@ -99,7 +100,7 @@ namespace Assets.Scripts
                 new XElement(
                     nameSpace + "ContentButton",
                     new XAttribute("id", eventPanelButtonId),
-                    new XAttribute("class", "panel-button toggle-button-toggled audio-btn-click"),
+                    new XAttribute("class", "panel-button audio-btn-click"),
                     new XAttribute("tooltip", "Event Panel"),
                     new XAttribute("name", "NavPanel.EventPanelButton"),
                     new XElement(
@@ -130,6 +131,13 @@ namespace Assets.Scripts
                     goto case FlightSceneExitReason.SaveAndExit;
                 case FlightSceneExitReason.SaveAndRecover:
                     goto case FlightSceneExitReason.SaveAndExit;
+                case FlightSceneExitReason.UndoAndExit:
+                    goto case FlightSceneExitReason.Retry;
+                case FlightSceneExitReason.Retry:
+                    if (ModSettings.Instance.KeepEventsOnRevert)
+                        goto case FlightSceneExitReason.SaveAndExit;
+                    else
+                        break;
                 case FlightSceneExitReason.SaveAndExit:
                     SaveEventsToDatabase();
                     SaveEventXml();
@@ -255,8 +263,6 @@ namespace Assets.Scripts
             if (_events.Count == 0)
                 return;
 
-            const double desiredWarpTime = 5.0;
-
             IFlightScene fs = Game.Instance.FlightScene;
             double timeToNextEvent = _events[0].time - fs.FlightState.Time;
 
@@ -304,7 +310,6 @@ namespace Assets.Scripts
                     else if (epEvent.time < gameTime + fs.TimeManager.DeltaTime)
                     {
                         fs.TimeManager.RequestPauseChange(true, false);
-                        fs.FlightSceneUI.ShowMessage("Event " + epEvent.title + " has been reached");
                         epEvent.state = EPEventState.Reached;
                     }
                 }

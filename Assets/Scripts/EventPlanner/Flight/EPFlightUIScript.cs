@@ -30,7 +30,10 @@ namespace Assets.Scripts
             listItemTemplate = controller.xmlLayout.GetElementById("text-list-item");
         }
 
-        public void OnTogglePanelState() { _mainPanelVisible = !_mainPanelVisible; }
+        public void OnTogglePanelState() 
+        { 
+            _mainPanelVisible = !_mainPanelVisible;
+        }
 
         public void SetUIVisibility(bool state)
         {
@@ -55,6 +58,37 @@ namespace Assets.Scripts
         public void OnCloseCreateEventPanel()
         {
             _createEventPanelVisible = false;
+        }
+
+        public void FillEventDataFromSelectedNode()
+        {
+            var selectedNode = Game.Instance.FlightScene.ViewManager.MapViewManager.MapView.MapViewInspector?.SelectedItem;
+
+            if (selectedNode == null)
+            {
+                ShowMessage("Failed to auto fill, no node was found.");
+                return;
+            }
+
+            double timeToNode = selectedNode.OrbitNode.Orbit.Time - Game.Instance.FlightScene.CraftNode.Orbit.Time;
+            timeToNode /= 3600.0 * 24.0; // convert to days
+
+            if (!double.IsNormal(timeToNode) && timeToNode <= 0.0)
+            {
+                ShowMessage("Failed to auto fill, node doesnt seem to be reachable.");
+                return;
+            }
+
+            XmlElement createEventPanel = controller.xmlLayout.GetElementById("ep-create-event-panel");
+            createEventPanel.GetElementByInternalId("title-input").SetAndApplyAttribute("text", selectedNode.OrbitNode.Name);
+            createEventPanel.GetElementByInternalId("desc-input").SetAndApplyAttribute("text", "");
+            
+            createEventPanel.GetElementByInternalId("time-input0").SetAndApplyAttribute("text", timeToNode.ToString());
+            createEventPanel.GetElementByInternalId("time-input1").SetAndApplyAttribute("text", "");
+            createEventPanel.GetElementByInternalId("time-input2").SetAndApplyAttribute("text", "");
+            createEventPanel.GetElementByInternalId("time-input3").SetAndApplyAttribute("text", "");
+            createEventPanel.GetElementByInternalId("time-input4").SetAndApplyAttribute("text", "");
+            createEventPanel.GetElementByInternalId("time-input5").SetAndApplyAttribute("text", "");
         }
 
         public void OnCreateEvent()

@@ -33,24 +33,29 @@ namespace Assets.Scripts
         /// </value>
         public static ModSettings Instance => _instance ?? (_instance = Game.Instance.Settings.ModSettings.GetCategory<ModSettings>());
 
-        public enum SillinessLevel { Default, Silly, Silliest };
+        public BoolSetting KeepEventsOnRevert { get; private set; }
+        
+        public enum NothingnessLevel { Nothing, Nothinger, Nothingest };
 
         ///// <summary>
-        ///// Gets the Silliness value
+        ///// Gets the value
         ///// </summary>
         ///// <value>
-        ///// The TestSetting1 value.
+        ///// The  value.
         ///// </value>
-        public EnumSetting<SillinessLevel> Silliness { get; private set; }
+        public EnumSetting<NothingnessLevel> Nothingness { get; private set; }
 
         /// <summary>
         /// Initializes the settings in the category.
         /// </summary>
         protected override void InitializeSettings()
         {
-            Silliness = CreateEnum<SillinessLevel>("Silliness")
-                .SetDescription("The level of silliness.")
-                .SetDefault(SillinessLevel.Default);
+            KeepEventsOnRevert = CreateBool("Keep Events On Revert")
+                .SetDefault(false);
+
+            Nothingness = CreateEnum<NothingnessLevel>("Nothing")
+                .SetDescription("This setting does nothing.")
+                .SetDefault(NothingnessLevel.Nothing);
         }
     }
 }
