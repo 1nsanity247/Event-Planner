@@ -1,0 +1,71 @@
+<XmlLayout xmlns="http://www.w3schools.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="..\..\..\ModTools\UI\XmlLayout.xsd">
+	<Include path="Ui/Xml/Flight/FlightStyles.xml" />
+	<Include path="Ui/Xml/InspectorPanel.xml" />
+
+	<Defaults>
+	</Defaults>
+
+	<RectTransform class="safe-area">
+		<!--Main Panel-->
+		<Panel id="twp-main-panel" class="flight-panel draggable" width="700" height="630" rectAlignment="UpperRight" offsetXY="-100 -100" border="border" active="true">
+			<Panel class="inspector-header translucent-panel" height="30" rectAlignment="UpperCenter">
+				<TextMeshPro class="inspector-title" text="Transfer Window Planner" margin="5 0 50 0" />
+				<Image class="inspector-panel-pin" width="24" height="24" rectAlignment="MiddleRight" sprite="Ui/Sprites/Common/IconCloseFlyout" onClick="OnTogglePanelState" hoverClass="inspector-panel-pin-hover"/>
+			</Panel>
+			<Panel width="100%" height="600" rectAlignment="UpperCenter" offsetXY="0 -30">
+				<Image id="gradient-image" width="30" height="440" rectAlignment="UpperLeft" offsetXY="10 -40" sprite="EventPlanner/Sprites/colon3" onClick="OnEditGradient" />
+				<TextMeshPro id="gradient-vel-min" width="100" height="30" rectAlignment="LowerLeft" alignment="Left" offsetXY="10 90" text="0"/>
+				<TextMeshPro id="gradient-vel-max" width="100" height="30" rectAlignment="UpperLeft" alignment="Left" offsetXY="10 -5" text="100"/>
+				<Panel width="500" height="500" rectAlignment="UpperRight" offsetXY ="-10 -10">
+					<Image id="plot-image" width="100" height="100" rectAlignment="MiddleCenter" sprite="Ui/Sprites/PlanetStudio/IconUploadedPending" onClick="OnPlotClicked()" />
+				</Panel>
+				<Panel class="panel" id="plot-context-menu" width="220" height="130" rectAlignment="LowerLeft" active="false">
+					<Image internalId="circle" width="10" height="10" rectAlignment="LowerLeft" offsetXY ="-30 -30" sprite="Ui/Sprites/Circle" color="#FF0000"/>
+					<TextMeshPro rectAlignment="UpperCenter" width="100%" height ="30" offsetXY="5 0" alignment="Left" text="Time to departure:"/>
+					<TextMeshPro rectAlignment="UpperCenter" width="100%" height ="30" offsetXY="5 -30" alignment="Left" text="Flight duration:"/>
+					<TextMeshPro rectAlignment="UpperCenter" width="100%" height ="30" offsetXY="5 -60" alignment="Left" text="Est. delta v:"/>
+					<TextMeshPro internalId="departure-time-text" rectAlignment="UpperCenter" width="100%" height ="30" offsetXY="-5 0" alignment="Right" text="-"/>
+					<TextMeshPro internalId="flight-duration-text" rectAlignment="UpperCenter" width="100%" height ="30" offsetXY="-5 -30" alignment="Right" text="-"/>
+					<TextMeshPro internalId="dv-text" rectAlignment="UpperCenter" width="100%" height ="30" offsetXY="-5 -60" alignment="Right" text="-"/>
+					<Button class ="btn btn-primary audio-btn-click" width="180" height="30" rectAlignment="LowerLeft" offsetXY="5 5" onClick="CreateEventFromContextMenu">
+						<TextMeshPro rectAlignment="MiddleCenter" width="100%" height="100%" text="Create Event" />
+					</Button>
+					<Image class="inspector-panel-pin" width="30" height="30" rectAlignment="LowerRight" offsetXY="-5 5" sprite="Ui/Sprites/Common/IconCloseFlyout" onClick="OnCloseContextMenu" hoverClass="inspector-panel-pin-hover"/>
+				</Panel>
+				<TextMeshPro id="plot-arr-min" width="50" height="30" rectAlignment="LowerLeft" alignment="Right" offsetXY="135 90" text="0"/>
+				<TextMeshPro id="plot-arr-max" width="50" height="30" rectAlignment="UpperLeft" alignment="Right" offsetXY="135 -5" text="100"/>
+				<TextMeshPro width="200" height="30" rectAlignment="UpperLeft" offsetXY="185 -160" rotation="0 0 -90" text="Flight Duration [Days]"/>
+				<TextMeshPro id="plot-dep-min" width="50" height="30" rectAlignment="LowerLeft" alignment="Left" offsetXY="190 60" text="0"/>
+				<TextMeshPro id="plot-dep-max" width="50" height="30" rectAlignment="LowerRight" alignment="Right" offsetXY="-10 60" text="100"/>
+				<TextMeshPro width="200" height="30" rectAlignment="LowerCenter" offsetXY="90 60" text="Departure Time [Days]"/>
+				<Panel id="origin-dropdown" class="tooltip-row no-image" width="120" height="30" rectAlignment="LowerLeft" offsetXY="20 20" navigation="None">
+					<TextMeshProDropdown internalId="dropdown" width="100%" height="100%">
+						<TMP_OptionTextTemplate enableWordWrapping="false" />
+						<TMP_DropdownLabel enableWordWrapping="false" />
+					</TextMeshProDropdown>
+				</Panel>
+				<Image width="30" height="30" rectAlignment="LowerLeft" offsetXY="150 20" sprite="Ui/Sprites/Flight/IconTimeFastForward" />
+				<Panel id="destination-dropdown" class="tooltip-row no-image" width="120" height="30" rectAlignment="LowerLeft" offsetXY="190 20" navigation="None">
+					<TextMeshProDropdown internalId="dropdown" width="100%" height="100%">
+						<TMP_OptionTextTemplate enableWordWrapping="false" />
+						<TMP_DropdownLabel enableWordWrapping="false" />
+					</TextMeshProDropdown>
+				</Panel>
+				<Image class="audio-btn-click" width="30" height="30" rectAlignment="LowerCenter" offsetXY="0 20" sprite="Ui/Sprites/Common/IconSubtract" onClick="OnChangePlotTime(-10)"/>
+				<TextMeshProInputField id="plot-time-input" width="120" height="30" rectAlignment="LowerCenter" offsetXY="80 20" text="" onEndEdit="OnSetPlotTime(value)">
+					<TMP_Text id="plot-time-text" richText="false" alignment="Center" color="#ffffff" text="" />
+				</TextMeshProInputField>
+				<Image class="audio-btn-click" width="30" height="30" rectAlignment="LowerCenter" offsetXY="160 20" sprite="Ui/Sprites/Common/IconAdd" onClick="OnChangePlotTime(10)"/>
+				<Button class ="btn btn-primary audio-btn-click" width="100" height="30" rectAlignment="LowerRight" offsetXY="-20 20" onClick="UpdatePlot">
+					<TextMeshPro rectAlignment="MiddleCenter" width="100%" height="100%" text="Update" />
+				</Button>
+			</Panel>
+		</Panel>
+	</RectTransform>
+
+	<!--Templates-->
+	<Panel id="text-list-item" class="audio-btn-click" color="#2e353e7F" preferredHeight="35" active="false" onClick="OnEventListItemClicked(this)">
+		<TextMeshPro internalId="label" class="label column-left" offsetXY="4 0" fontSize="15" text="label"/>
+		<TextMeshPro internalId="value" class="label column-right" offsetXY="-4 0" fontSize="15" text="value"/>
+	</Panel>
+</XmlLayout>

@@ -35,15 +35,7 @@ namespace Assets.Scripts
 
         public BoolSetting KeepEventsOnRevert { get; private set; }
         
-        public enum NothingnessLevel { Nothing, Nothinger, Nothingest };
-
-        ///// <summary>
-        ///// Gets the value
-        ///// </summary>
-        ///// <value>
-        ///// The  value.
-        ///// </value>
-        public EnumSetting<NothingnessLevel> Nothingness { get; private set; }
+        public BoolSetting Setting { get; private set; }
 
         /// <summary>
         /// Initializes the settings in the category.
@@ -53,9 +45,9 @@ namespace Assets.Scripts
             KeepEventsOnRevert = CreateBool("Keep Events On Revert")
                 .SetDefault(false);
 
-            Nothingness = CreateEnum<NothingnessLevel>("Nothing")
+            Setting = CreateBool("Setting")
                 .SetDescription("This setting does nothing.")
-                .SetDefault(NothingnessLevel.Nothing);
+                .SetDefault(false);
         }
     }
 }

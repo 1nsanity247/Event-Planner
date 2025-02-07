@@ -19,6 +19,7 @@ namespace Assets.Scripts
 
         private int _lastClickedId = -1;
         private float _lastClickTime = 0.0f;
+        private int _editEventId = -1;
 
         private readonly float[] timeFactors = { 86400.0f, 3600.0f, 60.0f, 86400.0f, 3600.0f, 60.0f };
 
@@ -44,20 +45,56 @@ namespace Assets.Scripts
 
         public void AddEventButtonClicked()
         {
-            if (_createEventPanelVisible) return;
+            if (_createEventPanelVisible) {
+                return;
+            }
 
+            ShowCreateEventPanel(false);
+        }
+
+        public void ShowCreateEventPanel(bool isEdit)
+        {
             _createEventPanelVisible = true;
+            _editEventId = -1;
+
+            controller.xmlLayout.GetElementById("add-event-button-text").SetText(isEdit ? "Edit Event" : "Add Event");
+            controller.xmlLayout.GetElementById("delete-event-button").SetActive(isEdit);
 
             XmlElement createEventPanel = controller.xmlLayout.GetElementById("ep-create-event-panel");
             createEventPanel.GetElementByInternalId("title-input").SetAndApplyAttribute("text", "");
             createEventPanel.GetElementByInternalId("desc-input").SetAndApplyAttribute("text", "");
-            for (int i = 0; i < 6; i++)
+            for (int i = 0; i < 6; i++) {
                 createEventPanel.GetElementByInternalId("time-input" + i).SetAndApplyAttribute("text", "");
+            }
         }
 
         public void OnCloseCreateEventPanel()
         {
             _createEventPanelVisible = false;
+        }
+
+        public void FillEventDataForNewEventCreation(string title, double time, string description = "", double warningBuffer = 0.0) 
+        {
+            // convert to days
+            time /= 3600.0 * 24.0;
+            warningBuffer /= 3600.0 * 24.0;
+
+            int days = Mathd.FloorToInt(time);
+            double hours = (time - days) * 24.0;
+
+            int bufferDays = Mathd.FloorToInt(warningBuffer);
+            double bufferHours = (warningBuffer - bufferDays) * 24.0;
+
+            XmlElement createEventPanel = controller.xmlLayout.GetElementById("ep-create-event-panel");
+            createEventPanel.GetElementByInternalId("title-input").SetAndApplyAttribute("text", title);
+            createEventPanel.GetElementByInternalId("desc-input").SetAndApplyAttribute("text", description);
+
+            createEventPanel.GetElementByInternalId("time-input0").SetAndApplyAttribute("text", days.ToString());
+            createEventPanel.GetElementByInternalId("time-input1").SetAndApplyAttribute("text", hours.ToString("n2"));
+            createEventPanel.GetElementByInternalId("time-input2").SetAndApplyAttribute("text", "");
+            createEventPanel.GetElementByInternalId("time-input3").SetAndApplyAttribute("text", bufferDays.ToString());
+            createEventPanel.GetElementByInternalId("time-input4").SetAndApplyAttribute("text", bufferHours.ToString("n2"));
+            createEventPanel.GetElementByInternalId("time-input5").SetAndApplyAttribute("text", "");
         }
 
         public void FillEventDataFromSelectedNode()
@@ -71,7 +108,6 @@ namespace Assets.Scripts
             }
 
             double timeToNode = selectedNode.OrbitNode.Orbit.Time - Game.Instance.FlightScene.CraftNode.Orbit.Time;
-            timeToNode /= 3600.0 * 24.0; // convert to days
 
             if (!double.IsNormal(timeToNode) && timeToNode <= 0.0)
             {
@@ -79,22 +115,13 @@ namespace Assets.Scripts
                 return;
             }
 
-            XmlElement createEventPanel = controller.xmlLayout.GetElementById("ep-create-event-panel");
-            createEventPanel.GetElementByInternalId("title-input").SetAndApplyAttribute("text", selectedNode.OrbitNode.Name);
-            createEventPanel.GetElementByInternalId("desc-input").SetAndApplyAttribute("text", "");
-            
-            createEventPanel.GetElementByInternalId("time-input0").SetAndApplyAttribute("text", timeToNode.ToString());
-            createEventPanel.GetElementByInternalId("time-input1").SetAndApplyAttribute("text", "");
-            createEventPanel.GetElementByInternalId("time-input2").SetAndApplyAttribute("text", "");
-            createEventPanel.GetElementByInternalId("time-input3").SetAndApplyAttribute("text", "");
-            createEventPanel.GetElementByInternalId("time-input4").SetAndApplyAttribute("text", "");
-            createEventPanel.GetElementByInternalId("time-input5").SetAndApplyAttribute("text", "");
+            FillEventDataForNewEventCreation(selectedNode.OrbitNode.Name, timeToNode);
         }
 
         public void OnCreateEvent()
         {
             XmlElement panel = controller.xmlLayout.GetElementById("ep-create-event-panel");
-            
+
             var inputs = panel.GetFormData();
 
             string title = inputs["title-input"];
@@ -120,19 +147,32 @@ namespace Assets.Scripts
                 return;
             }
 
-            EPManager.Instance.CreateEvent(title, desc, Game.Instance.FlightScene.FlightState.Time + times[0], times[1]);
+            if(_editEventId == -1) {
+                EPManager.Instance.CreateEvent(title, desc, Game.Instance.FlightScene.FlightState.Time + times[0], times[1]);
+            }
+            else {
+                EPManager.Instance.EditEvent(_editEventId, new EventData { title = title, description = desc, time = Game.Instance.FlightScene.FlightState.Time + times[0], warningBuffer = times[1] });
+                _editEventId = -1;
+            }
 
+            _createEventPanelVisible = false;
+        }
+
+        public void OnDeleteEvent() {
+            EPManager.Instance.RemoveEvent(_editEventId);
+            
             _createEventPanelVisible = false;
         }
 
         private void OnEventListItemClicked(XmlElement element)
         {
-            if (!int.TryParse(element.GetAttribute("event-list-item-id"), out int eventId))
+            if (!int.TryParse(element.GetAttribute("event-list-item-id"), out int eventId)) {
                 return;
+            }
             
             if (eventId != _lastClickedId || Time.time - _lastClickTime > 2.0f)
             {
-                Game.Instance.FlightScene.FlightSceneUI.ShowMessage("Click again to remove the event", false, 3.0f);
+                Game.Instance.FlightScene.FlightSceneUI.ShowMessage("Click again to edit the event", false, 3.0f);
 
                 _lastClickedId = eventId;
                 _lastClickTime = Time.time;
@@ -141,7 +181,11 @@ namespace Assets.Scripts
 
             if (Time.time - _lastClickTime < 2.0f)
             {
-                EPManager.Instance.RemoveEvent(eventId);
+                EventData thisEvent = EPManager.Instance.GetEvent(eventId);
+
+                ShowCreateEventPanel(true);
+                FillEventDataForNewEventCreation(thisEvent.title, thisEvent.time, thisEvent.description, thisEvent.warningBuffer);
+                _editEventId = _lastClickedId;
                 _lastClickedId = -1;
             }
         }
@@ -207,8 +251,12 @@ namespace Assets.Scripts
             }
         }
 
-        private string FormatTime(double time) { return Units.GetRelativeTimeString(time); }
+        private string FormatTime(double time) { 
+            return Units.GetRelativeTimeString(time); 
+        }
 
-        private void ShowMessage(string message) { Game.Instance.FlightScene?.FlightSceneUI.ShowMessage(message); }
+        private void ShowMessage(string message) { 
+            Game.Instance.FlightScene?.FlightSceneUI.ShowMessage(message); 
+        }
     }
 }

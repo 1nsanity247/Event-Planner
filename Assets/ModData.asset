@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: ModData
   m_EditorClassIdentifier: 
   _assemblies:
-  - Unity.AI.Navigation.dll
   - EventPlanner.dll
   _author: Insanity
-  _description: Allows you to set reminders for future events.
+  _description: Adds the ability to create reminders for future events, as well as
+    easier planning of transfers through the use of porkchop plots.
   _loadPriority: 1000
   _name: EventPlanner
   _otherAssets: []
@@ -28,7 +28,7 @@ MonoBehaviour:
   _steamTitle: 
   _steamVisibility: 0
   _versionMajor: 1
-  _versionMinor: 0
+  _versionMinor: 1
   _partCategories: []
   _parts: []
   _partStyleExtensions: []
